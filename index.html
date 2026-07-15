@@ -142,15 +142,20 @@ button:hover{
 }
 
 #backBtn{
-    position:absolute;
+    position:fixed;
     top:30px;
     left:30px;
-    background:none;
+    z-index:20;
+    background:rgba(1,5,6,.22);
     color:white;
-    border:none;
-    font-size:1rem;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:11px 18px;
+    font-size:.95rem;
+    font-weight:600;
     cursor:pointer;
-    display:none;
+    backdrop-filter:blur(10px);
+    box-shadow:0 10px 24px rgba(1,5,6,.18);
 }
 
 body.presentation-mode button{
@@ -165,8 +170,49 @@ body.presentation-mode button{
     transform:translateY(8px);
 }
 
-body.presentation-mode #backBtn{
-    display:none !important;
+.mode-toast{
+    position:fixed;
+    left:50%;
+    top:50%;
+    z-index:40;
+    min-width:260px;
+    padding:18px 24px;
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:16px;
+    background:rgba(1,5,6,.78);
+    color:white;
+    text-align:center;
+    backdrop-filter:blur(14px);
+    box-shadow:0 18px 50px rgba(1,5,6,.32);
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+    transform:translate(-50%,-45%);
+    transition:
+        opacity .25s ease,
+        visibility .25s ease,
+        transform .25s ease;
+}
+
+.mode-toast.is-visible{
+    opacity:1;
+    visibility:visible;
+    transform:translate(-50%,-50%);
+}
+
+.mode-toast strong{
+    display:block;
+    margin-bottom:8px;
+    font-family:'PP Neue Machina','PP Neue Montreal',sans-serif;
+    font-size:1.05rem;
+    font-weight:800;
+}
+
+.mode-toast span{
+    display:block;
+    color:#CAFEAD;
+    font-size:.95rem;
+    font-weight:600;
 }
 
 .chapter-title{
@@ -2751,11 +2797,13 @@ let step = 0;
 const firstStep = 0;
 const lastStep = 18;
 let presentationMode = false;
+let toastTimer;
 
 const presenter = {
     toggle(){
         presentationMode = !presentationMode;
         syncPresentationMode();
+        showModeToast();
     },
 
     next(){
@@ -2778,6 +2826,56 @@ const presenter = {
 
 function syncPresentationMode(){
     document.body.classList.toggle('presentation-mode', presentationMode);
+}
+
+function renderTrainingNavigation(){
+    const existingBackButton = document.getElementById('backBtn');
+
+    if(existingBackButton){
+        existingBackButton.remove();
+    }
+
+    if(step === firstStep){
+        return;
+    }
+
+    const backButton = document.createElement('button');
+    backButton.id = 'backBtn';
+    backButton.type = 'button';
+    backButton.textContent = '← Back';
+    backButton.addEventListener('click', previousStep);
+    document.body.appendChild(backButton);
+}
+
+function getModeToast(){
+    let toast = document.getElementById('modeToast');
+
+    if(toast){
+        return toast;
+    }
+
+    toast = document.createElement('div');
+    toast.id = 'modeToast';
+    toast.className = 'mode-toast';
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+
+    return toast;
+}
+
+function showModeToast(){
+    const toast = getModeToast();
+    const modeTitle = presentationMode ? 'Presentation Mode Enabled' : 'Training Mode Enabled';
+    const modeDetail = presentationMode ? '⌨ Keyboard Navigation Only' : '🖱 Mouse Navigation Restored';
+
+    window.clearTimeout(toastTimer);
+    toast.innerHTML = `<strong>${modeTitle}</strong><span>${modeDetail}</span>`;
+    toast.classList.add('is-visible');
+
+    toastTimer = window.setTimeout(function(){
+        toast.classList.remove('is-visible');
+    }, 1000);
 }
 
 function isTextEntryTarget(element){
@@ -3505,6 +3603,8 @@ app.innerHTML = `
 </div>
 `;
 }
+
+renderTrainingNavigation();
 
 }
 
