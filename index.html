@@ -124,6 +124,17 @@ button{
     font-size:1rem;
     font-weight:700;
     cursor:pointer;
+    opacity:1;
+    visibility:visible;
+    max-height:80px;
+    overflow:hidden;
+    transition:
+        opacity .25s ease,
+        visibility .25s ease,
+        max-height .25s ease,
+        padding .25s ease,
+        margin .25s ease,
+        transform .25s ease;
 }
 
 button:hover{
@@ -140,6 +151,22 @@ button:hover{
     font-size:1rem;
     cursor:pointer;
     display:none;
+}
+
+body.presentation-mode button{
+    opacity:0 !important;
+    visibility:hidden !important;
+    pointer-events:none;
+    max-height:0;
+    padding-top:0;
+    padding-bottom:0;
+    margin-top:0;
+    margin-bottom:0;
+    transform:translateY(8px);
+}
+
+body.presentation-mode #backBtn{
+    display:none !important;
 }
 
 .chapter-title{
@@ -2721,6 +2748,46 @@ button:hover{
 <script>
 
 let step = 0;
+const firstStep = 0;
+const lastStep = 18;
+let presentationMode = false;
+
+const presenter = {
+    toggle(){
+        presentationMode = !presentationMode;
+        syncPresentationMode();
+    },
+
+    next(){
+        nextStep();
+    },
+
+    previous(){
+        previousStep();
+    },
+
+    async toggleFullscreen(){
+        if(document.fullscreenElement){
+            await document.exitFullscreen();
+            return;
+        }
+
+        await document.documentElement.requestFullscreen();
+    }
+};
+
+function syncPresentationMode(){
+    document.body.classList.toggle('presentation-mode', presentationMode);
+}
+
+function isTextEntryTarget(element){
+    return element && (
+        element.tagName === 'INPUT' ||
+        element.tagName === 'TEXTAREA' ||
+        element.tagName === 'SELECT' ||
+        element.isContentEditable
+    );
+}
 
 function render(){
 
@@ -3442,9 +3509,63 @@ app.innerHTML = `
 }
 
 function nextStep(){
-step++;
-render();
+    if(step >= lastStep){
+        return;
+    }
+
+    step++;
+    render();
 }
+
+function previousStep(){
+    if(step <= firstStep){
+        return;
+    }
+
+    step--;
+    render();
+}
+
+document.addEventListener('keydown', async function(event){
+    if(isTextEntryTarget(event.target)){
+        return;
+    }
+
+    const key = event.key.toLowerCase();
+
+    if(key === 'p'){
+        event.preventDefault();
+        presenter.toggle();
+        return;
+    }
+
+    if(key === 'f'){
+        event.preventDefault();
+
+        try{
+            await presenter.toggleFullscreen();
+        }catch(error){
+            console.warn('Fullscreen request was not completed.', error);
+        }
+
+        return;
+    }
+
+    if(!presentationMode){
+        return;
+    }
+
+    if(event.key === 'ArrowRight' || event.key === ' '){
+        event.preventDefault();
+        presenter.next();
+        return;
+    }
+
+    if(event.key === 'ArrowLeft'){
+        event.preventDefault();
+        presenter.previous();
+    }
+});
 
 
 
