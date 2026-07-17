@@ -2366,6 +2366,270 @@ body.presentation-mode button{
     to{opacity:1; transform:translateY(0);}
 }
 
+.visual-conclusion-screen{
+    position:relative;
+    overflow:hidden;
+}
+
+.visual-conclusion-stage{
+    position:relative;
+    display:grid;
+    place-items:center;
+    width:min(960px,94vw);
+    height:min(620px,72vh);
+}
+
+.visual-envelope-wrap{
+    position:absolute;
+    left:50%;
+    top:48%;
+    z-index:3;
+    width:270px;
+    height:186px;
+    transform:translate(-50%,-50%);
+}
+
+.visual-conclusion-stage.is-complete .visual-envelope-wrap{
+    animation:sealedEnvelopeFlight 1.35s cubic-bezier(.3,0,.2,1) 2.5s forwards;
+}
+
+.visual-envelope{
+    position:absolute;
+    inset:0;
+    filter:drop-shadow(0 22px 28px rgba(1,5,6,.22));
+}
+
+.visual-envelope-back,
+.visual-envelope-front,
+.visual-envelope-flap{
+    position:absolute;
+    left:0;
+    width:100%;
+}
+
+.visual-envelope-back{
+    top:34px;
+    height:146px;
+    border:2px solid rgba(255,255,255,.28);
+    border-radius:14px;
+    background:linear-gradient(180deg,#f8fbff 0%,#D0DBEA 100%);
+}
+
+.visual-envelope-front{
+    bottom:0;
+    height:128px;
+    border-radius:0 0 14px 14px;
+    background:
+        linear-gradient(145deg,transparent 49%,rgba(1,5,6,.1) 50%,transparent 51%),
+        linear-gradient(215deg,transparent 49%,rgba(1,5,6,.1) 50%,transparent 51%),
+        #eef4fb;
+    clip-path:polygon(0 0,50% 48%,100% 0,100% 100%,0 100%);
+}
+
+.visual-envelope-flap{
+    top:34px;
+    height:126px;
+    z-index:5;
+    background:#f8fbff;
+    clip-path:polygon(0 0,50% 86%,100% 0);
+    transform:rotateX(180deg);
+    transform-origin:top center;
+    transition:transform .7s cubic-bezier(.2,.8,.2,1);
+}
+
+.visual-conclusion-stage.is-sealed .visual-envelope-flap,
+.visual-conclusion-stage.is-complete .visual-envelope-flap{
+    transform:rotateX(0deg);
+    transition-delay:.88s;
+}
+
+.visual-envelope-pocket{
+    position:absolute;
+    left:18px;
+    right:18px;
+    bottom:18px;
+    z-index:6;
+    height:86px;
+    border-radius:0 0 12px 12px;
+    background:#e8eff8;
+    clip-path:polygon(0 0,50% 62%,100% 0,100% 100%,0 100%);
+}
+
+.seal-stamp{
+    position:absolute;
+    left:50%;
+    top:86px;
+    z-index:8;
+    display:grid;
+    place-items:center;
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    background:#CAFEAD;
+    box-shadow:0 10px 24px rgba(1,5,6,.22);
+    opacity:0;
+    transform:translate(-50%,-50%) scale(.64);
+}
+
+.seal-stamp img{
+    width:40px;
+    height:40px;
+    object-fit:contain;
+}
+
+.visual-conclusion-stage.is-sealed .seal-stamp,
+.visual-conclusion-stage.is-complete .seal-stamp{
+    animation:sealStamp .58s cubic-bezier(.18,.9,.25,1.2) 1.42s forwards;
+}
+
+.visual-card-piece{
+    position:absolute;
+    left:50%;
+    top:50%;
+    z-index:4;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    width:220px;
+    padding:14px 15px;
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:12px;
+    background:rgba(255,255,255,.92);
+    color:#010506;
+    box-shadow:0 18px 34px rgba(1,5,6,.2);
+    font-size:.86rem;
+    font-weight:700;
+    line-height:1.18;
+    opacity:0;
+    --card-y:-220px;
+    transform:translate(calc(-50% + var(--card-shift)),var(--card-y)) rotate(var(--card-angle)) scale(.96);
+}
+
+.visual-card-piece img{
+    flex:0 0 28px;
+    width:28px;
+    height:28px;
+    object-fit:contain;
+}
+
+.visual-card-piece.is-inserted{
+    animation:cardIntoEnvelope 1.05s cubic-bezier(.28,.85,.18,1) both;
+}
+
+.visual-card-piece:nth-child(2){--card-y:-248px; animation-delay:.03s;}
+.visual-card-piece:nth-child(3){--card-y:-210px; animation-delay:.06s;}
+.visual-card-piece:nth-child(4){--card-y:-256px; animation-delay:.02s;}
+.visual-card-piece:nth-child(5){--card-y:-218px; animation-delay:.07s;}
+.visual-card-piece:nth-child(6){--card-y:-242px; animation-delay:.04s;}
+
+.foundation-line{
+    position:absolute;
+    left:50%;
+    top:75%;
+    z-index:2;
+    color:#CAFEAD;
+    font-family:'PP Neue Machina','PP Neue Montreal',sans-serif;
+    font-size:1.5rem;
+    font-weight:800;
+    opacity:0;
+    transform:translate(-50%,12px);
+}
+
+.visual-conclusion-stage.is-complete .foundation-line{
+    animation:foundationLineReveal .55s ease .55s forwards, foundationLineExit .45s ease 2.45s forwards;
+}
+
+.motion-trail{
+    position:absolute;
+    left:50%;
+    top:48%;
+    z-index:1;
+    width:270px;
+    height:5px;
+    border-radius:999px;
+    background:linear-gradient(90deg,rgba(202,254,173,0),rgba(202,254,173,.45),rgba(202,254,173,0));
+    opacity:0;
+    transform:translate(-44%,-50%) rotate(-22deg);
+}
+
+.visual-conclusion-stage.is-complete .motion-trail{
+    animation:motionTrail .9s ease 2.72s forwards;
+}
+
+.thank-you-lockup{
+    position:absolute;
+    left:50%;
+    top:50%;
+    z-index:6;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:28px;
+    opacity:0;
+    transform:translate(-50%,-44%);
+}
+
+.thank-you-lockup img{
+    width:300px;
+    max-width:70vw;
+}
+
+.thank-you-lockup span{
+    font-family:'PP Neue Machina','PP Neue Montreal',sans-serif;
+    color:#CAFEAD;
+    font-size:2rem;
+    font-weight:800;
+}
+
+.visual-conclusion-stage.is-complete .thank-you-lockup{
+    animation:thankYouReveal .7s ease 3.65s forwards;
+}
+
+@keyframes cardIntoEnvelope{
+    0%{
+        opacity:0;
+        transform:translate(calc(-50% + var(--card-shift)),var(--card-y)) rotate(var(--card-angle)) scale(.96);
+    }
+    18%{opacity:1;}
+    72%{
+        opacity:1;
+        transform:translate(-50%,-66px) rotate(0deg) scale(.9);
+    }
+    100%{
+        opacity:0;
+        transform:translate(-50%,12px) rotate(0deg) scale(.58);
+    }
+}
+
+@keyframes sealStamp{
+    0%{opacity:0; transform:translate(-50%,-50%) scale(.64);}
+    58%{opacity:1; transform:translate(-50%,-50%) scale(1.13);}
+    100%{opacity:1; transform:translate(-50%,-50%) scale(1);}
+}
+
+@keyframes foundationLineReveal{
+    to{opacity:1; transform:translate(-50%,0);}
+}
+
+@keyframes foundationLineExit{
+    to{opacity:0; transform:translate(-50%,-8px);}
+}
+
+@keyframes sealedEnvelopeFlight{
+    0%{transform:translate(-50%,-50%) scale(1);}
+    100%{transform:translate(112vw,-92vh) scale(.22) rotate(12deg);}
+}
+
+@keyframes motionTrail{
+    0%{opacity:0; transform:translate(-44%,-50%) rotate(-22deg) scaleX(.3);}
+    30%{opacity:.8;}
+    100%{opacity:0; transform:translate(44vw,-36vh) rotate(-22deg) scaleX(1.8);}
+}
+
+@keyframes thankYouReveal{
+    to{opacity:1; transform:translate(-50%,-50%);}
+}
+
 .message-highway-scene{
     display:grid;
     grid-template-columns:minmax(720px,3fr) minmax(260px,1fr);
@@ -2898,9 +3162,12 @@ body.presentation-mode button{
 
 let step = 0;
 const firstStep = 0;
-const lastStep = 18;
+const lastStep = 19;
 const finalRevealMax = 7;
+const visualConclusionStep = 19;
+const visualConclusionMax = 7;
 let finalRevealStep = 0;
+let visualConclusionRevealStep = 0;
 let presentationMode = false;
 let toastTimer;
 
@@ -2911,6 +3178,45 @@ const conclusionPoints = [
     'We help partners maintain a strong sender reputation.',
     'We provide tools that support healthy mailing lists.',
     'We continuously improve our platform to support reliable email delivery.'
+];
+
+const visualConclusionCards = [
+    {
+        title:'Reliable Infrastructure',
+        icon:'graphics/icons/PNG/Structured_ai_icons_Final_Stability.png',
+        angle:'-7deg',
+        shift:'-118px'
+    },
+    {
+        title:'Domain Authentication',
+        icon:'graphics/icons/PNG/Structured_ai_icons_Final_Access Performance.png',
+        angle:'5deg',
+        shift:'92px'
+    },
+    {
+        title:'Email Best Practices',
+        icon:'graphics/icons/PNG/Structured_ai_icons_Final_Training and Support.png',
+        angle:'-3deg',
+        shift:'-70px'
+    },
+    {
+        title:'Sender Reputation',
+        icon:'graphics/icons/PNG/Structured_ai_icons_Final_Expertise.png',
+        angle:'6deg',
+        shift:'130px'
+    },
+    {
+        title:'Healthy Mailing Lists',
+        icon:'graphics/icons/PNG/Structured_ai_icons_Final_Curate.png',
+        angle:'-5deg',
+        shift:'-102px'
+    },
+    {
+        title:'Continuous Improvement',
+        icon:'graphics/icons/PNG/Structured_ai_icons_Final_Scale Efforts.png',
+        angle:'4deg',
+        shift:'76px'
+    }
 ];
 
 const presenter = {
@@ -3034,7 +3340,7 @@ function updateFinalConclusion(){
     }
 
     if(finalButton){
-        finalButton.style.visibility = finalRevealStep >= finalRevealMax ? 'hidden' : '';
+        finalButton.style.visibility = '';
     }
 }
 
@@ -3045,6 +3351,51 @@ function advanceFinalConclusion(){
 
     finalRevealStep++;
     updateFinalConclusion();
+}
+
+function getVisualConclusionCardHtml(card){
+    return `
+<div class="visual-card-piece is-inserted" style="--card-angle:${card.angle};--card-shift:${card.shift};">
+<img src="${card.icon}" alt="">
+<span>${card.title}</span>
+</div>
+`;
+}
+
+function updateVisualConclusion(){
+    const stage = document.getElementById('visualConclusionStage');
+    const cardTrack = document.getElementById('visualCardTrack');
+    const visualButton = document.getElementById('visualConclusionButton');
+
+    if(!stage || !cardTrack){
+        return;
+    }
+
+    const visibleCount = Math.min(visualConclusionRevealStep, visualConclusionCards.length);
+
+    while(cardTrack.children.length > visibleCount){
+        cardTrack.lastElementChild.remove();
+    }
+
+    while(cardTrack.children.length < visibleCount){
+        cardTrack.insertAdjacentHTML('beforeend', getVisualConclusionCardHtml(visualConclusionCards[cardTrack.children.length]));
+    }
+
+    stage.classList.toggle('is-sealed', visualConclusionRevealStep >= visualConclusionCards.length);
+    stage.classList.toggle('is-complete', visualConclusionRevealStep >= visualConclusionMax);
+
+    if(visualButton){
+        visualButton.style.visibility = visualConclusionRevealStep >= visualConclusionMax ? 'hidden' : '';
+    }
+}
+
+function advanceVisualConclusion(){
+    if(visualConclusionRevealStep >= visualConclusionMax){
+        return;
+    }
+
+    visualConclusionRevealStep++;
+    updateVisualConclusion();
 }
 
 function isTextEntryTarget(element){
@@ -3753,8 +4104,47 @@ app.innerHTML = `
 `;
 }
 
-if(step === lastStep){
+if(step === 19){
+
+app.innerHTML = `
+<div class="screen fade visual-conclusion-screen">
+
+<div id="visualConclusionStage" class="visual-conclusion-stage" aria-label="Structured visual conclusion">
+
+<div id="visualCardTrack"></div>
+
+<div class="visual-envelope-wrap" aria-label="Open envelope">
+<div class="visual-envelope">
+<div class="visual-envelope-back"></div>
+<div class="visual-envelope-flap"></div>
+<div class="visual-envelope-front"></div>
+<div class="visual-envelope-pocket"></div>
+<div class="seal-stamp" aria-hidden="true"><img src="graphics/structured_icon.png" alt=""></div>
+</div>
+</div>
+
+<div class="foundation-line">Built on a foundation of reliability.</div>
+<div class="motion-trail" aria-hidden="true"></div>
+
+<div class="thank-you-lockup">
+<img src="graphics/Structure Logo_White.svg" alt="Structured">
+<span>Thank you.</span>
+</div>
+
+</div>
+
+<button id="visualConclusionButton" onclick="nextStep()">CONTINUE</button>
+
+</div>
+`;
+}
+
+if(step === 18){
     updateFinalConclusion();
+}
+
+if(step === visualConclusionStep){
+    updateVisualConclusion();
 }
 
 renderTrainingNavigation();
@@ -3762,8 +4152,13 @@ renderTrainingNavigation();
 }
 
 function nextStep(){
-    if(step === lastStep){
+    if(step === 18 && finalRevealStep < finalRevealMax){
         advanceFinalConclusion();
+        return;
+    }
+
+    if(step === visualConclusionStep){
+        advanceVisualConclusion();
         return;
     }
 
@@ -3773,8 +4168,12 @@ function nextStep(){
 
     step++;
 
-    if(step === lastStep){
+    if(step === 18){
         finalRevealStep = 0;
+    }
+
+    if(step === visualConclusionStep){
+        visualConclusionRevealStep = 0;
     }
 
     render();
@@ -3786,6 +4185,11 @@ function previousStep(){
     }
 
     step--;
+
+    if(step === 18){
+        finalRevealStep = finalRevealMax;
+    }
+
     render();
 }
 
