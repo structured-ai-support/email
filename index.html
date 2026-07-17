@@ -2263,6 +2263,109 @@ body.presentation-mode button{
     font-weight:800;
 }
 
+.final-conclusion{
+    width:min(980px,94vw);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.final-conclusion .structured-help-copy{
+    max-width:940px;
+    margin-bottom:32px;
+}
+
+.conclusion-list{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:min(860px,94vw);
+    margin-bottom:28px;
+    text-align:left;
+    transition:opacity .35s ease;
+}
+
+.conclusion-list.is-dimmed{
+    opacity:.78;
+}
+
+.conclusion-point{
+    display:flex;
+    align-items:center;
+    gap:15px;
+    padding:13px 17px;
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:12px;
+    background:rgba(255,255,255,.07);
+    box-shadow:0 12px 30px rgba(1,5,6,.12);
+    font-size:1.02rem;
+    font-weight:600;
+    line-height:1.35;
+    animation:conclusionReveal .42s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.conclusion-icon{
+    display:grid;
+    place-items:center;
+    flex:0 0 34px;
+    width:34px;
+    height:34px;
+    border-radius:9px;
+    background:#CAFEAD;
+    animation:conclusionIconPop .48s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.conclusion-icon img{
+    width:22px;
+    height:22px;
+    object-fit:contain;
+}
+
+.closing-message{
+    width:min(900px,94vw);
+    padding-top:4px;
+    text-align:center;
+}
+
+.closing-message.is-visible{
+    animation:closingReveal .5s ease both;
+}
+
+.closing-message strong{
+    display:block;
+    margin-bottom:16px;
+    font-family:'PP Neue Machina','PP Neue Montreal',sans-serif;
+    color:#CAFEAD;
+    font-size:2rem;
+    font-weight:800;
+    line-height:1.12;
+}
+
+.closing-message span{
+    display:block;
+    max-width:840px;
+    margin:0 auto;
+    color:white;
+    font-size:1.18rem;
+    line-height:1.5;
+}
+
+@keyframes conclusionReveal{
+    from{opacity:0; transform:translateX(-18px);}
+    to{opacity:1; transform:translateX(0);}
+}
+
+@keyframes conclusionIconPop{
+    0%{transform:scale(.82);}
+    65%{transform:scale(1.08);}
+    100%{transform:scale(1);}
+}
+
+@keyframes closingReveal{
+    from{opacity:0; transform:translateY(12px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
 .message-highway-scene{
     display:grid;
     grid-template-columns:minmax(720px,3fr) minmax(260px,1fr);
@@ -2796,8 +2899,19 @@ body.presentation-mode button{
 let step = 0;
 const firstStep = 0;
 const lastStep = 18;
+const finalRevealMax = 7;
+let finalRevealStep = 0;
 let presentationMode = false;
 let toastTimer;
+
+const conclusionPoints = [
+    'We build a reliable email delivery infrastructure.',
+    'We help partners authenticate their sending domains.',
+    'We guide partners toward email sending best practices.',
+    'We help partners maintain a strong sender reputation.',
+    'We provide tools that support healthy mailing lists.',
+    'We continuously improve our platform to support reliable email delivery.'
+];
 
 const presenter = {
     toggle(){
@@ -2876,6 +2990,61 @@ function showModeToast(){
     toastTimer = window.setTimeout(function(){
         toast.classList.remove('is-visible');
     }, 1000);
+}
+
+function getConclusionPointHtml(point){
+    return `
+<div class="conclusion-point">
+<span class="conclusion-icon" aria-hidden="true"><img src="graphics/structured_icon.png" alt=""></span>
+<span>${point}</span>
+</div>
+`;
+}
+
+function updateFinalConclusion(){
+    const list = document.getElementById('conclusionList');
+    const closing = document.getElementById('closingMessage');
+    const finalButton = document.getElementById('finalRevealButton');
+
+    if(!list || !closing){
+        return;
+    }
+
+    const visibleCount = Math.min(finalRevealStep, conclusionPoints.length);
+
+    while(list.children.length > visibleCount){
+        list.lastElementChild.remove();
+    }
+
+    while(list.children.length < visibleCount){
+        list.insertAdjacentHTML('beforeend', getConclusionPointHtml(conclusionPoints[list.children.length]));
+    }
+
+    list.classList.toggle('is-dimmed', finalRevealStep > conclusionPoints.length);
+
+    if(finalRevealStep > conclusionPoints.length){
+        closing.innerHTML = `
+<strong>We don't control mailbox provider placement decisions.</strong>
+<span>We help partners maximize the likelihood of inbox placement through reliable infrastructure, authentication and email best practices.</span>
+`;
+        closing.classList.add('is-visible');
+    }else{
+        closing.innerHTML = '';
+        closing.classList.remove('is-visible');
+    }
+
+    if(finalButton){
+        finalButton.style.visibility = finalRevealStep >= finalRevealMax ? 'hidden' : '';
+    }
+}
+
+function advanceFinalConclusion(){
+    if(finalRevealStep >= finalRevealMax){
+        return;
+    }
+
+    finalRevealStep++;
+    updateFinalConclusion();
 }
 
 function isTextEntryTarget(element){
@@ -3568,40 +3737,24 @@ app.innerHTML = `
 
 <h2 class="chapter-title">How Structured Helps</h2>
 
-<p class="structured-help-copy">Structured helps partners maximize successful delivery through authentication, sending best practices and platform safeguards.</p>
+<div class="final-conclusion">
 
-<div class="help-practices" aria-label="Deliverability learning resources">
+<p class="structured-help-copy">While mailbox providers make the final placement decision, Structured helps partners maximize the likelihood of successful email delivery.</p>
 
-    <div class="help-card">
-        <span class="help-icon">📬</span>
-        <span>Delivery vs Deliverability</span>
-    </div>
+<div id="conclusionList" class="conclusion-list" aria-live="polite"></div>
 
-    <div class="help-card">
-        <span class="help-icon">ID</span>
-        <span>SPF, DKIM & DMARC Authentication</span>
-    </div>
-
-    <div class="help-card">
-        <span class="help-icon">📥</span>
-        <span>Inbox, Promotions & Spam Placement</span>
-    </div>
-
-    <div class="help-card">
-        <span class="help-icon">★</span>
-        <span>Sender Reputation</span>
-    </div>
+<div id="closingMessage" class="closing-message" aria-live="polite"></div>
 
 </div>
 
-<p class="structured-help-copy">These practices help mailbox providers view partner.com as a trustworthy sender and improve the likelihood of inbox placement.</p>
-
-<p class="final-highlight">We cannot control mailbox provider placement decisions, but we can help partners build and maintain a strong sending reputation.</p>
-
-
+<button id="finalRevealButton" onclick="nextStep()">CONTINUE</button>
 
 </div>
 `;
+}
+
+if(step === lastStep){
+    updateFinalConclusion();
 }
 
 renderTrainingNavigation();
@@ -3609,11 +3762,21 @@ renderTrainingNavigation();
 }
 
 function nextStep(){
+    if(step === lastStep){
+        advanceFinalConclusion();
+        return;
+    }
+
     if(step >= lastStep){
         return;
     }
 
     step++;
+
+    if(step === lastStep){
+        finalRevealStep = 0;
+    }
+
     render();
 }
 
